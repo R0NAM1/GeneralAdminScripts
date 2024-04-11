@@ -4,8 +4,9 @@ import argparse, time, csv, sys, subprocess
 # Base command 'gam update cros DEVICEIDSTRING ou "/Desired/OU"'
 
 # Globals
-global doDryRun
+global doDryRun, doStep
 doDryRun = False
+doStep = False
 
 def runGAMCommand(thisUUID, thisOU):
     # Construct subprocess string
@@ -22,7 +23,7 @@ def runGAMCommand(thisUUID, thisOU):
     
 
 def mainLoop(csvReader):
-    global doDryRun
+    global doDryRun, doStep
 
     # Loop over each row in the CSV
     for row in csvReader:
@@ -36,6 +37,11 @@ def mainLoop(csvReader):
         else:
             print("=== Moving " + str(thisUUID) + " to the OU: " + str(thisOU) + " ===")
             runGAMCommand(thisUUID, thisOU)
+            
+        # Wait for input if stepping
+        if doStep == True:
+            input("==Press enter to run next itteration==")
+
 
 # Main, check if --dry-run was passed in
 if __name__ == '__main__':    
@@ -47,10 +53,16 @@ if __name__ == '__main__':
     # Add dry run argument
     parser.add_argument('--dry-run', action='store_true', help='Do a dry run showing logic without commiting any changes')
     
+    # Add step argument
+    parser.add_argument('--step', action='store_true', help='Do itterations one by one seperated by user input')
+    
     parsedArgs = parser.parse_args()
     
-    # Check if CSV is valid, if not raise exception
+    if parsedArgs.step:
+        print("Stepping enabled, will not run willy-nilly.")
+        doStep = True
     
+    # Check if CSV is valid, if not raise exception
     with parsedArgs.csv_file as openedCsv:
         
         csvReader = csv.DictReader(openedCsv)
