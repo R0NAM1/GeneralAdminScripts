@@ -1,0 +1,1 @@
+A reposiotry for storing general use scripts, for example Google Admin Manager (GAM) update scripts, Windows Powershell Setup Scripts, and anything else that probably should be just a GIST but I'd rather it be a repo.
